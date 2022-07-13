@@ -1,0 +1,16 @@
+{{/**
+  The interface templates are stable, thus this file should be unchanged.
+*/}}
+
+{{/** Core API */}}
+{{- include "charts.core.deployment" . -}}
+{{- include "charts.core.service" . -}}
+{{- include "charts.core.ingress" . -}}
+
+{{/** RBAC */}}
+{{- include "charts.rbac.serviceAccount" . -}}
+{{- include "charts.rbac.role" . -}}
+{{- include "charts.rbac.clusterRole" . -}}
+{{- include "charts.rbac.roleBinding" . -}}
+{{- include "charts.rbac.clusterRoleBinding" . -}}
+

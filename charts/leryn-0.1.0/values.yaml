@@ -1,0 +1,57 @@
+exposure:
+  type: ingress
+  ingress:
+    controller: default
+    class: "nginx"
+    hostname: leryn.top
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+    secret: []
+
+externalURL: https://leryn.top
+internalTLS: false
+
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    backend:
+      existingClaim: ""
+      storageClass: ""
+      subPath: "."
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      annotations: {}
+
+application:
+  gateway:
+    image:
+      name: "harbor.leryn.top/leryn/leryn-api-gateway"
+      tag: "nightly"
+    secrets:
+      - gateway-db
+    ports:
+      - name: http
+        port: 8080
+        servicePort: 80
+        protocol: TCP
+  auth-server:
+    image:
+      name: "harbor.leryn.top/leryn/leryn-cloud-api-gateway"
+      tag: "nightly"
+    secrets:
+      - auth-server-db
+    ports:
+      - port: 8080
+  message-center:
+    image:
+      name: "harbor.leryn.top/leryn/leryn-message"
+      tag: "nightly"
+    secrets:
+      - message-center-db
+    ports:
+      - port: 8080
+  web:
+    image:
+      name: "harbor.leryn.top/leryn/overture"
+      tag: "nightly"

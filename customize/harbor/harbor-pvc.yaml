@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-registry-pvc
+  namespace: harbor
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 5G
+  volumeMode: Filesystem
+  volumeName: harbor-registry-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-chartmuseum-pvc
+  namespace: harbor
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 5G
+  volumeMode: Filesystem
+  volumeName: harbor-chartmuseum-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-jobservice-pvc
+  namespace: harbor
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1G
+  volumeMode: Filesystem
+  volumeName: harbor-jobservice-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-database-pvc
+  namespace: harbor
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1G
+  volumeMode: Filesystem
+  volumeName: harbor-database-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-trivy-pvc
+  namespace: harbor
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1G
+  volumeMode: Filesystem
+  volumeName: harbor-trivy-pv
