@@ -3,14 +3,17 @@
 */}}
 
 {{/** Core API */}}
-{{- include "charts.core.deployment" . -}}
-{{- include "charts.core.service" . -}}
-{{- include "charts.core.ingress" . -}}
+{{- include "api.workload.deployment" . -}}
+{{- include "api.configuration.configmap" . -}}
+{{- include "api.network.service" . -}}
+{{- include "api.network.ingress" . -}}
+{{- include "api.storage.persistence.volume" . -}}
+{{- include "api.storage.persistence.claim" . -}}
 
 {{/** RBAC */}}
-{{- include "charts.rbac.serviceAccount" . -}}
-{{- include "charts.rbac.role" . -}}
-{{- include "charts.rbac.clusterRole" . -}}
-{{- include "charts.rbac.roleBinding" . -}}
-{{- include "charts.rbac.clusterRoleBinding" . -}}
+{{- include "api.rbac.serviceAccount" . -}}
+{{- include "api.rbac.role" . -}}
+{{- include "api.rbac.clusterRole" . -}}
+{{- include "api.rbac.roleBinding" . -}}
+{{- include "api.rbac.clusterRoleBinding" . -}}
 

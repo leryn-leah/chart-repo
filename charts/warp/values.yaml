@@ -29,13 +29,14 @@ serviceAccount:
   annotations: {}
 
 exposure:
+  enabled: false
   # Optional type to export the service.
   # (*) Enum:
   #   - ingress (*)
   #   - clusterIP
   #   - nodePort
   #   - loadBalancer
-  type: ingress
+  type: nodePort
   ingress:
     controller: default
     # Omitted if null.
@@ -67,7 +68,7 @@ exposure:
   loadBalancer:
   # TODO
 
-externalURL: https://api/domain.com
+externalURL: https://api.domain.com
 internalTLS: false
 
 ipFamily:
@@ -89,19 +90,18 @@ persistence:
       annotations: {}
 
 application:
-  gateway:
+  backend:
     image:
       # (*) Required.
-      name: "harbor.leryn.top/leryn/leryn-api-gateway"
+      name: "docker.io/hello-world"
       # Docker image tag
       # (*) Default: "latest"
-      tag: "nightly"
+      tag: "latest"
     # (*) Default: []
     secrets: []
     # (*) Default: []
     ports:
-      -
-        # (*) Default: port-<port>
+      - # (*) Default: port-<port>
         name: http
         # Exposed container port.
         port: 8080
@@ -110,6 +110,9 @@ application:
         servicePort: 80
         # Protocol for specified container port.
         # (*) Default: TCP
+        # enum:
+        #   - TCP
+        #   - UDP
         protocol: TCP
 
 middlewares:

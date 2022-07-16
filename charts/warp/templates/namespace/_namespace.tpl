@@ -1,4 +1,4 @@
-{{- define "charts.core.namespace.name" -}}
+{{- define "api.namespace.name" -}}
 {{- if .Values.namespace -}}
 {{- if .Values.namespace.create -}}
 {{- coalesce .Release.Namespace .Values.namespace.name "default" -}}

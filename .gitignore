@@ -324,3 +324,5 @@ $RECYCLE.BIN/
 **/*.tgz
 
 !/bin
+
+charts/*/charts/**

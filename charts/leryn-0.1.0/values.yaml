@@ -1,13 +1,22 @@
 exposure:
   type: ingress
+  enabled: true
   ingress:
-    controller: default
-    class: "nginx"
-    hostname: leryn.top
-    annotations:
-      ingress.kubernetes.io/ssl-redirect: "true"
-      ingress.kubernetes.io/proxy-body-size: "0"
-    secret: []
+    web:
+      hostname: leryn.top
+      path: "/"
+      annotations:
+        ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/proxy-body-size: "0"
+      secrets: []
+    gateway:
+      hostname: leryn.top
+      path: "/api/(.*)"
+      annotations:
+        ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/proxy-body-size: "0"
+        ingress.kubernetes.io/rewrite-target: "/$1"
+      secrets: []
 
 externalURL: https://leryn.top
 internalTLS: false
@@ -15,27 +24,31 @@ internalTLS: false
 persistence:
   enabled: true
   persistentVolumeClaim:
-    backend:
-      existingClaim: ""
-      storageClass: ""
-      subPath: "."
-      accessMode: ReadWriteOnce
-      size: 1Gi
+    message-attachement:
+      storageClass: "local-storage"
+      accessModes:
+        - ReadWriteOnce
+      capacity: 1Gi
       annotations: {}
-
+      mountOptions: {}
+      local:
+        path: "/data/leryn/message-center/attachment"
 application:
   gateway:
+    # language: java
     image:
       name: "harbor.leryn.top/leryn/leryn-api-gateway"
       tag: "nightly"
     secrets:
       - gateway-db
     ports:
-      - name: http
-        port: 8080
-        servicePort: 80
-        protocol: TCP
+      - port: 8080
+    configMaps:
+      - name: application.yml
+        conf: gateway/application.yml
+        path: /opt/config
   auth-server:
+    # language: java
     image:
       name: "harbor.leryn.top/leryn/leryn-cloud-api-gateway"
       tag: "nightly"
@@ -43,7 +56,12 @@ application:
       - auth-server-db
     ports:
       - port: 8080
+    configMaps:
+      - name: application.yml
+        conf: auth-server/application.yml
+        path: /opt/config
   message-center:
+    # language: java
     image:
       name: "harbor.leryn.top/leryn/leryn-message"
       tag: "nightly"
@@ -51,7 +69,22 @@ application:
       - message-center-db
     ports:
       - port: 8080
+    configMaps:
+      - name: application.yml
+        conf: message-center/application.yml
+        path: /opt/config
+    persistences:
+      - name: message-attachement
+        claim: message-attachement
+        path: /mnt/message
   web:
+    # language: nginx
     image:
       name: "harbor.leryn.top/leryn/overture"
       tag: "nightly"
+    ports:
+      - port: 80
+    configMaps:
+      - name: nginx.conf
+        conf: web/nginx.conf
+        path: /usr/share/nginx/html

@@ -1,7 +1,7 @@
 {{/*
   Create the name of the service account to use.
 */}}
-{{- define "charts.rbac.serviceAccount.name" -}}
+{{- define "api.rbac.serviceAccount.name" -}}
 {{- if .Values.serviceAccount -}}
 {{- if .Values.serviceAccount.create -}}
 {{- coalesce .Values.serviceAccount.name .Values.namespace.name .Release.Name "default" }}
@@ -12,8 +12,10 @@
 {{- print "default" }}
 {{- end -}}
 {{- end -}}
+
 ---
-{{- define "charts.rbac.serviceAccount" -}}
+
+{{- define "api.rbac.serviceAccount" -}}
 {{/*
   ServiceAccount
 */}}

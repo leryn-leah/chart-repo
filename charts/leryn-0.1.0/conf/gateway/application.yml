@@ -1,0 +1,57 @@
+application:
+  gateway:
+    auth-server: http://leryn-cloud-auth-server.leryn
+server:
+  port: 8080
+spring:
+  application:
+    name: Leryn API Gateway Server
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            maxAge: 18000
+            allow-credentials: true
+            allowed-origin-patterns: "*"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - X-Access-Token
+              - X-Credential-ID
+            exposed-headers:
+              - Access-Control-Request-Method
+              - Access-Control-Request-Headers
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - X-Access-Token
+              - X-Credential-ID
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    hikari:
+      pool-name: DateHikariCP
+      maximum-pool-size: 50
+      max-lifetime: 18000
+      idle-timeout: 18000
+      auto-commit: true
+      minimum-idle: 5
+      connection-timeout: 3000
+      connection-test-query: select 1 from dual
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:SS
+    time-zone: GMT+8
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    throw-exception-if-no-handler-found: true

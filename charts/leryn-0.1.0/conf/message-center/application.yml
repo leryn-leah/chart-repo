@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types: text/plain applcation/x-javascript application/javascript text/css text/xml application/xml application/xml+rss text/javascript application/x-httpd-php
+grpc:
+  server:
+    port: 8999
+spring:
+  application:
+    name: Leryn Message Center
+  mail:
+    host: smtp.qq.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB

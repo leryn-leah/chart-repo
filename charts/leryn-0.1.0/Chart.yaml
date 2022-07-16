@@ -28,7 +28,7 @@ sources:
   - https://github.com/leryn1122/chart-repo
 
 dependencies:
-  - name: base-lib
+  - name: warp
     repository: https://harbor.leryn.top/chartrepo/leryn
     version: 0.1.0
 
