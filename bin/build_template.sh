@@ -8,7 +8,6 @@ while read -r chart ; do
   cd -P "$PWD/charts/$chart" || exit 1
 
   helm dependency update \
-    && helm lint -n default \
     && helm package . \
     && find . -maxdepth 1 -name "*.tgz" -exec helm cm-push {} leryn \; \
     && find . -maxdepth 1 -name "*.tgz" -exec rm {} \;
