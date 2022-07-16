@@ -22,11 +22,11 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ $persistence.storageClass | default "" | quote }}
   volumeMode: Filesystem
-  {{- if eq "nfs" $persistence.provisioner }}
+  {{- if eq "nfs" ($persistence.provisioner | default "x") }}
     nfs:
     path: {{ $persistence.nfs.path }}
   {{- end }}
-  {{- if eq "host" $persistence.provisioner }}
+  {{- if eq "host" ($persistence.provisioner | default "x") }}
   local:
     path: {{ $persistence.local.path }}
   {{- end }}
