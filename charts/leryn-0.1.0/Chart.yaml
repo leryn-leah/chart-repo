@@ -32,5 +32,7 @@ dependencies:
     repository: https://harbor.leryn.top/chartrepo/leryn
     version: 0.1.0
 
+icon: https://symbols.getvecta.com/stencil_86/47_kubernetes-icon.0ceba07af6.svg
+
 maintainers:
   - name: leryn

@@ -3,4 +3,4 @@ dependencies:
   repository: https://harbor.leryn.top/chartrepo/leryn
   version: 0.1.0
 digest: sha256:31aa17b3465c447366c659ef0b74bd3eea3be86f296be8da6cb3df3ca8067a5c
-generated: "2022-07-17T01:40:19.3259965+08:00"
+generated: "2022-07-17T02:06:42.8712051+08:00"

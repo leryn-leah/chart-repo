@@ -25,5 +25,6 @@ appVersion: "1.16.0"
 home: https://leryn.top
 sources:
   - https://github.com/leryn1122/chart-repo
+icon: https://symbols.getvecta.com/stencil_86/47_kubernetes-icon.0ceba07af6.svg
 maintainers:
   - name: leryn
