@@ -1,19 +1,31 @@
 # Chart Repo
 
+## TL;DR
+
 All my charts lie here.
 
 ## Install
 
 ### Prerequisites
 
-This project uses [helm](https://github.com/helm/helm) and [chartmuseum](https://github.com/helm/chartmuseum). Go check them out if you don't have them locally installed.
+This project uses  and 
 
-### Plugins
+### Develop
 
-Install local [helm-push plugin](https://github.com/chartmuseum/helm-push).
+Go check them out if you don't have them installed locally.
+
+- [Helm](https://github.com/helm/helm)
+- (Optional*) Chart repo server: native [Chartmuseum](https://github.com/helm/chartmuseum), or recommended [Harbor](https://github.com/goharbor/harbor) which integrates chartmuseum internally.
+- (Optional*) Use `helm push` command to commit charts to the remote, or install local [helm-push plugin](https://github.com/chartmuseum/helm-push).
+
+### Runtime
+
+- Helm and Kubernetes
+
+### How to install helm-push plugin
 
 ```bash
-helm plugin install git://github.com/chartmuseum/helm-push.git
+helm plugin install https://github.com/chartmuseum/helm-push.git
 ```
 
 ## Build
@@ -29,8 +41,25 @@ Use the bash script to build the helm repo.
 
 ```bash
 # Add your helm repo first.
-helm repo add leryn https://harbor.leryn.top/chartrepo/leryn
+helm repo add leryn https://harbor.leryn.top/chartrepo/library
 
 bin/build_template.sh
 ```
 
+## Usage
+
+All my charts lie here.
+
+## Related Efforts
+
+Those repos are referenced on:
+
+- [bitnami/charts](https://github.com/bitnami/charts)
+
+## Maintainers
+
+[@Leryn](https://github.com/leryn1122).
+
+## License
+
+[MIT](LICENSE) © Leryn
