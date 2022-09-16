@@ -1,6 +1,6 @@
 dependencies:
 - name: warp
-  repository: https://harbor.leryn.top/chartrepo/leryn
+  repository: https://harbor.leryn.top/chartrepo/library
   version: 0.1.0
-digest: sha256:31aa17b3465c447366c659ef0b74bd3eea3be86f296be8da6cb3df3ca8067a5c
-generated: "2022-07-17T02:06:42.8712051+08:00"
+digest: sha256:65b85c611330ffb74c7c8071a4a738a7583c41e97809df990ef254840c3cc80e
+generated: "2022-09-16T13:28:51.8839444+08:00"

@@ -29,7 +29,7 @@ sources:
 
 dependencies:
   - name: warp
-    repository: https://harbor.leryn.top/chartrepo/leryn
+    repository: https://harbor.leryn.top/chartrepo/library
     version: 0.1.0
 
 icon: https://symbols.getvecta.com/stencil_86/47_kubernetes-icon.0ceba07af6.svg
