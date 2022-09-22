@@ -8,8 +8,6 @@ All my charts lie here.
 
 ### Prerequisites
 
-This project uses  and 
-
 ### Develop
 
 Go check them out if you don't have them installed locally.
