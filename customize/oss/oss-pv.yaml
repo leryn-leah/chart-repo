@@ -5,7 +5,7 @@ metadata:
   name: oss-data-pv
 spec:
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
@@ -23,24 +23,16 @@ spec:
                 - leryn-aliyun01
 ---
 apiVersion: v1
-kind: PersistentVolume
+kind: PersistentVolumeClaim
 metadata:
-  name: oss-conf-pv
+  name: oss-data-pvc
+  namespace: oss
 spec:
-  capacity:
-    storage: 10Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
-  local:
-    path: /conf/minio
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - leryn-aliyun01
+  resources:
+    requests:
+      storage: 1G
+  volumeMode: Filesystem
+  volumeName: oss-data-pv
