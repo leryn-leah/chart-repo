@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eux
+
 cd -P "$(dirname ${0-$BASHSOURCE})"|| exit 1
 while [[ ! -e ./.git ]] ; do
   cd -P "$PWD/.." || exit 1
