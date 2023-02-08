@@ -8,5 +8,6 @@ while [[ ! -e ./.git ]] ; do
 done
 
 APP="$1"
-helm template --debug $APP charts/$APP -n $APP 1> .$APP-charts.yaml
+helm template --debug "myapp" charts/$APP -n $APP | \
+  grep --color=never "\S" 1> .$APP-charts.yaml
 cat .$APP-charts.yaml
