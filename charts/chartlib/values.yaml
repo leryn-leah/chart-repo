@@ -47,14 +47,14 @@ serviceAccount:
 #  ipv6:
 #    enabled: true
 
-# - proxy
-# - ingress
+# Exposure type.
+#   - ingress (*)
+#   - proxy
 exposureType: ingress
 
 service:
   type: ClusterIP
   port: 80
-
 
 proxy:
   httpProxy: ""
@@ -95,20 +95,33 @@ persistence:
 volumePermissions:
   enabled: false
 
-#portal:
-#  image:
-#    registry: docker.io
-#    repository: nginx
-#    tag: latest
-#    digest: ""
-#    pullPolicy: IfNotPresent
-#    pullSecrets: []
-#  command: []
-#  args: []
-#  containerPorts: {}
-#  replicaCount: 1
-#  resources:
-#    limits: {}
-#    requets: {}
+components:
+  portal:
+    # Type of workload:
+    #   - `deployment`
+    #   - `statefulset`
+    #   - `daemonset`
+    #   - `pod`
+    type: deployment
+    image:
+      registry: docker.io
+      repository: nginx
+      tag: latest
+      digest: ""
+      pullPolicy: IfNotPresent
+      pullSecrets: []
+    command: []
+    args: []
+    containerPorts: {}
+    replicas: 1
+
+    # Container sidecars.
+    sidecars:
+      # Use predefined sidecars given by name.
+      predefined: []
+
+  database:
+    type: statefulset
+
 
 debug: false

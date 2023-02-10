@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 helm install minio minio/minio -n oss \
+  --version 4.0.14 \
   --set consoleIngress.enabled=true                    \
   --set consoleIngress.hosts={oss-console.leryn.top}   \
   --set consoleIngress.ingressClassName=nginx          \

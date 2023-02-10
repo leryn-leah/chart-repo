@@ -1,4 +1,4 @@
-{{/* vim: set filetype=mustache: */}}
+{{- /* vim: set filetype=mustache: */}}
 
 {{- define "api.networking.ingress.spec" -}}
   defaultBackend: ""

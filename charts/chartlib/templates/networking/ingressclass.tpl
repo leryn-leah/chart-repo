@@ -1,4 +1,4 @@
-{{/* vim: set filetype=mustache: */}}
+{{- /* vim: set filetype=mustache: */}}
 
 {{- if .Values.debug -}}
 {{- if eq .Values.exposureType "ingress" }}

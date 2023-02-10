@@ -1,4 +1,4 @@
-{{/* vim: set filetype=mustache: */}}
+{{- /* vim: set filetype=mustache: */}}
 
 {{/*
 Renders a value that contains template.
