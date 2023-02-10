@@ -1,0 +1,203 @@
+# Default values for kreutzer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  kubeVersion: ""
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+replicaCount: 1
+
+kubeVersion: ""
+
+clusterDomain: cluster.local
+
+commonAnnotations: {}
+
+commonLabels: {}
+
+diagnosticMode:
+  enabled: false
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+#externalURL: https://core.mydomain.com
+
+#internalTLS:
+#  enabled: false
+#  tlsSecret: ""
+
+#ipFamily:
+#  ipv4:
+#    enabled: true
+#  ipv6:
+#    enabled: true
+
+# Exposure type.
+#   - Ingress (*)
+#   - Proxy
+exposureType: Ingress
+
+service:
+  type: ClusterIP
+  port: 80
+
+proxy:
+  httpProxy: ""
+  httpsProxy: ""
+  noProxy: ""
+  components:
+    - ""
+
+ingress:
+  core:
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: core.domain.com
+        paths:
+          - path: /api/v1/(.*)
+            pathType: ImplementationSpecific
+  #        backend:
+  #          service:
+  #            name: core
+  #            port:
+  #              number: 8080
+  portal:
+    hosts:
+      - host: core.domain.com
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+
+persistence:
+  enabled: true
+  resourcePolicy: 'keep'
+  persistentVolumeClaim: {}
+  accessModes:
+    - ReadOnlyMany
+
+volumePermissions:
+  enabled: false
+
+components:
+  portal:
+    enabled: true
+    type: Deployment
+    image:
+      repository: nginx:latest
+    ports:
+      http: 80
+    configMaps:
+      portal-config:
+        type: File
+        projectPath: conf/nginx.conf
+        mountPath: /etc/nginx/nginx.conf
+
+  core:
+    enabled: true
+    type: Deployment
+    image:
+      repository: busybox:1.30.1
+    ports:
+      http: 8080
+  database:
+    enabled: true
+    type: StatefulSet
+    image:
+      repository: postgres
+      tag: 15.1-alpine
+    command:
+      - "/bin/sh"
+      - "-ec"
+    args:
+      - |
+        cp /vault/config/extraconfig-from-values.hcl /tmp/storageconfig.hcl;
+        [ -n "${HOST_IP}" ] && sed -Ei "s|HOST_IP|${HOST_IP?}|g" /tmp/storageconfig.hcl;
+        [ -n "${POD_IP}" ] && sed -Ei "s|POD_IP|${POD_IP?}|g" /tmp/storageconfig.hcl;
+        [ -n "${HOSTNAME}" ] && sed -Ei "s|HOSTNAME|${HOSTNAME?}|g" /tmp/storageconfig.hcl;
+        [ -n "${API_ADDR}" ] && sed -Ei "s|API_ADDR|${API_ADDR?}|g" /tmp/storageconfig.hcl;
+        [ -n "${TRANSIT_ADDR}" ] && sed -Ei "s|TRANSIT_ADDR|${TRANSIT_ADDR?}|g" /tmp/storageconfig.hcl;
+        [ -n "${RAFT_ADDR}" ] && sed -Ei "s|RAFT_ADDR|${RAFT_ADDR?}|g" /tmp/storageconfig.hcl;
+        /usr/local/bin/docker-entrypoint.sh vault server -config=/tmp/storageconfig.hcl
+    env:
+      - name: PGDATA
+        value: /var/lib/postgresql/data/pgdata
+    envFrom:
+      - secretRef:
+          name: kreutzer-database
+    secrets:
+    resources: {}
+
+    initContainers:
+      - name: data-migrator
+        image:
+          repository: postgres:15.1-alpine
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - '[ -e /var/lib/postgresql/data/postgresql.conf ] && [ ! -d /var/lib/postgresql/data/pgdata
+            ] && mkdir -m 0700 /var/lib/postgresql/data/pgdata && mv /var/lib/postgresql/data/*
+            /var/lib/postgresql/data/pgdata/ || true'
+        resources: {}
+      - name: data-permissions-ensurer
+        image:
+          repository: postgres
+          tag: 15.1-alpine
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - chmod -R 700 /var/lib/postgresql/data/pgdata || true
+        resources: {}
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: database-data
+  vault:
+    enabled: true
+    type: StatefulSet
+    image:
+      repository: hashicorp/vault:1.12.2
+    ports:
+      http: 8200
+      https: 8201
+    configMaps:
+      vault-config:
+        type: File
+        projectPath: conf/extraconfig-from-values.hcl
+        mountPath: /vault/config/extraconfig-from-values.hcl
+    lifecycle:
+      preStop:
+        exec:
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "sleep 5 && kill -SIGTERM $(pidof vault)"
+
+  dind:
+    enabled: true
+    type: StatefulSet
+    image:
+      repository: docker:dind
+    ports:
+      http: 2376
+    securityContext:
+      privileged: true
+
+debug: false

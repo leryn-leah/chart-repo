@@ -1,0 +1,4 @@
+{{- include "api.workload.deployment" . -}}
+{{- include "api.workload.statefulset" . -}}
+{{- include "api.networking.ingress" . -}}
+{{- include "api.config.configmap" . -}}

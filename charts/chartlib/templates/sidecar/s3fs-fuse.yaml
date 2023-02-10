@@ -1,0 +1,38 @@
+{{- define "api.worload.sidecar.s3fs.values" -}}
+s3fs:
+  image:
+    registry: harbor.leryn.top
+    repository: infra/s3fs
+    tag: v1.89
+  env:
+    - name: MNT_POINT
+      value: ""
+    - name: AWS_KEY
+      value: ""
+    - name: AWS_SECRET_KEY
+      value: ""
+    - name: S3_ENDPOINT
+      value: ""
+    - name: S3_BUCKET
+      value: ""
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  lifecycle:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - -c
+          - umount -f ${MNT_POINT}
+  securityContext:
+    capabilities:
+      add:
+        - SYS_ADMIN
+    privileged: true
+{{- end -}}
+
+{{- define "api.worload.sidecar.s3fs" -}}
+{{ include "api.workload.application.container" (include "api.workload.sidecar.s3fs.values" .) -}}
+{{- end -}}
