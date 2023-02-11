@@ -4,22 +4,22 @@
   Container template
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.container" -}}
-{{ include "api.workload.application.image" . }}
-{{ include "api.workload.application.command" . }}
-{{ include "api.workload.application.args" . }}
-{{ include "api.workload.application.ports" . }}
-{{ include "api.workload.application.env" . }}
-{{ include "api.workload.application.resources" . }}
-{{/*{{ include "api.workload.application.lifecycle" . }}*/}}
-{{ include "api.workload.application.volumeMounts" . }}
+{{- define "v1.workload.application.container" -}}
+{{ include "v1.workload.application.image" . }}
+{{ include "v1.workload.application.command" . }}
+{{ include "v1.workload.application.args" . }}
+{{ include "v1.workload.application.ports" . }}
+{{ include "v1.workload.application.env" . }}
+{{ include "v1.workload.application.resources" . }}
+{{ include "v1.workload.application.lifecycle" . }}
+{{ include "v1.workload.application.volumeMounts" . }}
 {{- end -}}
 
 {{- /*
   Number of Replicas
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.replicas" -}}
+{{- define "v1.workload.application.replicas" -}}
 {{- if eq (toString .replicas) "0" }}
 {{- .replicas }}
 {{- else }}
@@ -31,19 +31,19 @@
   Container image
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.image" -}}
-{{- $registry := default "docker.io" .image.registry }}
-{{- $repository := required "The image is required!" .image.repository }}
-{{- $tag := default .image.digest .image.tag "latest" }}
-{{- if contains ":" $repository }}
+{{- define "v1.workload.application.image" -}}
+{{- $registry := default "docker.io" .image.registry -}}
+{{- $repository := required "The image is required!" .image.repository -}}
+{{- $tag := default .image.digest .image.tag "latest" -}}
+{{- if contains ":" $repository -}}
 image: {{ printf "%s/%s" $registry $repository }}
-{{- else }}
+{{- else -}}
 image: {{ printf "%s/%s:%s" $registry $repository $tag }}
-{{- end }}
+{{- end -}}
 {{- if .pullPolicy }}
 imagePullPolicy: {{ default "IfNotPresent" .pullPolicy }}
-{{- end }}
-{{- if .pullSecrets }}
+{{- end -}}
+{{- if .pullSecrets -}}
 imagePullSecrets: {{ .pullSecrets }}
 {{- end -}}
 {{- end -}}
@@ -52,26 +52,26 @@ imagePullSecrets: {{ .pullSecrets }}
   Container entrypoint
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.command" -}}
+{{- define "v1.workload.application.command" -}}
 {{- if .command }}
 command:
-{{ range $commandSeg := .command }}
+{{- range $commandSeg := .command }}
   - {{ quote $commandSeg }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*
   Container arguments
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.args" -}}
+{{- define "v1.workload.application.args" -}}
 {{- if .args }}
 args:
-{{ range $arg := .args }}
+{{- range $arg := .args }}
   - {{ quote $arg }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*
@@ -87,8 +87,8 @@ args:
   ```
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.ports" -}}
-{{- if .ports }}
+{{- define "v1.workload.application.ports" -}}
+{{- if .ports -}}
 ports:
   {{- if .ports.http }}
   - name: http
@@ -118,7 +118,7 @@ ports:
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.env" -}}
+{{- define "v1.workload.application.env" -}}
 env:
   - name: TZ
     value: Asia/Shanghai
@@ -138,11 +138,11 @@ envFrom: []
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.resources" -}}
-{{- if .resources }}
+{{- define "v1.workload.application.resources" -}}
+{{- if .resources -}}
 resources:
   {{- .resources | toYaml | nindent 2 }}
-{{- end }}
+{{- end -}}
 {{- end -}}
 
 {{- /*
@@ -155,21 +155,21 @@ resources:
   ```
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.volumeMounts" -}}
+{{- define "v1.workload.application.volumeMounts" -}}
 volumeMounts:
 {{- if .configMaps }}
 {{- range $configMapName, $configMap := .configMaps }}
   - name: {{ $configMapName }}
     mountPath: {{ $configMap.mountPath }}
     subPath: {{ base $configMap.mountPath }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.healthcheck" -}}
+{{- define "v1.workload.application.healthcheck" -}}
 
 livenessProbe: {}
 readinessProbe: {}
@@ -178,24 +178,24 @@ readinessProbe: {}
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.lifecycle" -}}
+{{- define "v1.workload.application.lifecycle" -}}
 {{- if .lifecycle }}
 lifecycle:
-  {{- .lifecycle | nindent 4 }}
+  {{- .lifecycle | toYaml | nindent 2 }}
 {{- end -}}
 {{- end -}}
 
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.volumes" -}}
+{{- define "v1.workload.application.volumes" -}}
 volumes: []
 {{- end -}}
 
 {{- /*
   - In: .Values.<Application>
 */}}
-{{- define "api.workload.application.securityContext" -}}
+{{- define "v1.workload.application.securityContext" -}}
 securityContext: {}
 {{- end -}}
 

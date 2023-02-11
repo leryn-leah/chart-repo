@@ -1,14 +1,14 @@
 {{- /* vim: set filetype=mustache: */}}
 
-{{- define "api.networking.ingress.spec" -}}
+{{- define "v1.networking.ingress.spec" -}}
   defaultBackend: ""
   ingressClassName: {{ .className }}
 {{- end -}}
 
-{{- define "api.networking.ingress.backend" -}}
+{{- define "v1.networking.ingress.backend" -}}
 {{- end -}}
 
-{{- define "api.networking.ingress.rule" -}}
+{{- define "v1.networking.ingress.rule" -}}
 host: ""
   paths:
   - path: ""
@@ -19,5 +19,5 @@ host: ""
         number: 8080
 {{- end }}
 
-{{- define "api.networking.ingress.tls" -}}
+{{- define "v1.networking.ingress.tls" -}}
 {{- end -}}

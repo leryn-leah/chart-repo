@@ -3,11 +3,11 @@
 {{- /*
 
 */}}
-{{- define "api.networking.ingress" -}}
+{{- define "v1.networking.ingress" -}}
 {{ $root := . }}
 {{- if eq (title .Values.exposureType) "Ingress" }}
 {{- range $ingressName, $ingress := .Values.ingress }}
-apiVersion: {{ include "api.capabilities.ingress.apiVersion" $root }}
+apiVersion: {{ include "v1.capabilities.ingress.apiVersion" $root }}
 kind: Ingress
 metadata:
   name: {{ $root.Release.Name }}-{{ $ingressName }}
@@ -17,7 +17,7 @@ metadata:
     "app.kubernetes.io/component": {{ $ingressName }}
   annotations: {}
 spec:
-{{/*  {{- include "api.networking.ingress.ingressclass" $ingress | nindent 2 -}}*/}}
+{{/*  {{- include "v1.networking.ingress.ingressclass" $ingress | nindent 2 -}}*/}}
   rules:
     - host: core.domain.com
       http:
@@ -43,7 +43,7 @@ spec:
 {{- /*
   - In: .Values.Ingress.<Application>
 */}}
-{{- define "api.networking.ingress.ingressclass" -}}
+{{- define "v1.networking.ingress.ingressclass" -}}
 {{- if .className }}
 ingressClassName: {{ .className }}
 {{- end -}}

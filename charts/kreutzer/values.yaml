@@ -138,10 +138,9 @@ components:
     env:
       - name: PGDATA
         value: /var/lib/postgresql/data/pgdata
-    envFrom:
-      - secretRef:
-          name: kreutzer-database
     secrets:
+      kreutzer-database:
+        POSTGRES_PASSWORD: admin
     resources: {}
 
     initContainers:

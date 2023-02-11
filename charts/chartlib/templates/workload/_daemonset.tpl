@@ -1,10 +1,10 @@
 {{- /* vim: set filetype=mustache: */}}
 
-{{- define "api.workload.daemonset" -}}
+{{- define "v1.workload.daemonset" -}}
 {{- $root := . -}}
 {{- range $applicationName, $application := .Values.components -}}
-{{- if $application.enabled -}}
-{{- if eq (title $application.type) "DaemonSet" -}}
+{{- if $application.enabled }}
+{{- if eq (title $application.type) "DaemonSet" }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -15,7 +15,7 @@ metadata:
     "app.kubernetes.io/component": {{ quote $applicationName }}
   annotations: {}
 spec:
-  replicas: {{ include "api.workload.application.replicas" $application }}
+  replicas: {{ include "v1.workload.application.replicas" $application }}
   selector:
     matchLabels: {}
   template:
@@ -32,23 +32,23 @@ spec:
       {{- range $initContainer := $application.initContainers }}
         -
           name: {{ $initContainer.name }}
-          {{- include "api.workload.application.container" $initContainer | nindent 10 }}
+          {{- include "v1.workload.application.container" $initContainer | nindent 10 }}
       {{- end }}
       {{- end }}
       containers:
         -
           name: {{ $applicationName }}
-          {{- include "api.workload.application.container" $application | nindent 10 }}
+          {{- include "v1.workload.application.container" $application | nindent 10 }}
 
         {{- if $application.sidecars }}
         {{- range $sidecar := $application.sidecars }}
         -
           name: {{ $applicationName }}
-          {{- include "api.workload.application.container" $sidecar | nindent 10 }}
+          {{- include "v1.workload.application.container" $sidecar | nindent 10 }}
         {{- end }}
         {{- end }}
-      {{- include "api.workload.application.volumes" $application | nindent 6 }}
-      {{- include "api.workload.application.securityContext" $application | nindent 6 }}
+      {{- include "v1.workload.application.volumes" $application | nindent 6 }}
+      {{- include "v1.workload.application.securityContext" $application | nindent 6 }}
 ---
 {{- end -}}
 {{- end -}}

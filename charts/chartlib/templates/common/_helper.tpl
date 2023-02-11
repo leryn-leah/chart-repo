@@ -3,7 +3,7 @@
 {{/*
 Return the target Kubernetes version
 */}}
-{{- define "api.core.objectMeta" -}}
+{{- define "v1.core.objectMeta" -}}
 metadata:
   name: ""
   namespace: ""
@@ -13,7 +13,7 @@ metadata:
 
 {{/*
 */}}
-{{- define "api.core.objectMeta.labels" -}}
+{{- define "v1.core.objectMeta.labels" -}}
 {{ $root := . }}
 "app.kubernetes.io/name": {{ $root.Release.Name }}
 "app.kubernetes.io/component": core

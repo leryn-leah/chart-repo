@@ -1,11 +1,11 @@
 {{- /* vim: set filetype=mustache: */}}
 
-{{- define "api.config.configmap" -}}
+{{- define "v1.config.configmap" -}}
 {{- $root := . -}}
 {{- $operator := . -}}
 {{- range $applicationName, $application := .Values.components -}}
-{{- if $application.enabled -}}
-{{- range $configMapName, $configMap := $application.configMaps -}}
+{{- if $application.enabled }}
+{{- range $configMapName, $configMap := $application.configMaps }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,10 +16,10 @@ metadata:
     "app.kubernetes.io/component": {{ quote $applicationName }}
   annotations: {}
 data:
-  {{ if eq (title $configMap.type) "File" }}
-  {{ base $configMap.mountPath }}: -|
-    {{ $operator.Files.Get (clean $configMap.projectPath) | nindent 4 }}
-  {{ end }}
+  {{- if eq (title $configMap.type) "File" }}
+  {{ base $configMap.mountPath }}: |-
+    {{- $operator.Files.Get (clean $configMap.projectPath) | nindent 4 }}
+  {{- end }}
   {{/* End of File */}}
 ---
 {{- end -}}

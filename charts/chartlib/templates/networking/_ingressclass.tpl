@@ -1,9 +1,9 @@
 {{- /* vim: set filetype=mustache: */}}
 
-{{- define "api.networking.ingressclass" -}}
+{{- define "v1.networking.ingressclass" -}}
 {{- $root := . }}
 {{- if eq (title .Values.exposureType) "Ingress" }}
-apiVersion: {{ include "api.capabilities.ingress.apiVersion" $root }}
+apiVersion: {{ include "v1.capabilities.ingress.apiVersion" $root }}
 kind: IngressClass
 metadata:
   name: ""

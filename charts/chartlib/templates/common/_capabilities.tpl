@@ -3,7 +3,7 @@
 {{/*
 Return the target Kubernetes version
 */}}
-{{- define "api.capabilities.kubeVersion" -}}
+{{- define "v1.capabilities.kubeVersion" -}}
 {{- if .Values.global }}
     {{- if .Values.global.kubeVersion }}
     {{- .Values.global.kubeVersion -}}
@@ -18,20 +18,20 @@ Return the target Kubernetes version
 {{/*
 Return the appropriate apiVersion for ingress.
 */}}
-{{- define "api.capabilities.ingress.apiVersion" -}}
+{{- define "v1.capabilities.ingress.apiVersion" -}}
 {{- if .Values.ingress -}}
 {{- if .Values.ingress.apiVersion -}}
 {{- .Values.ingress.apiVersion -}}
-{{- else if semverCompare "<1.14-0" (include "api.capabilities.kubeVersion" .) -}}
+{{- else if semverCompare "<1.14-0" (include "v1.capabilities.kubeVersion" .) -}}
 {{- print "extensions/v1beta1" -}}
-{{- else if semverCompare "<1.19-0" (include "api.capabilities.kubeVersion" .) -}}
+{{- else if semverCompare "<1.19-0" (include "v1.capabilities.kubeVersion" .) -}}
 {{- print "networking.k8s.io/v1beta1" -}}
 {{- else -}}
 {{- print "networking.k8s.io/v1" -}}
 {{- end }}
-{{- else if semverCompare "<1.14-0" (include "api.capabilities.kubeVersion" .) -}}
+{{- else if semverCompare "<1.14-0" (include "v1.capabilities.kubeVersion" .) -}}
 {{- print "extensions/v1beta1" -}}
-{{- else if semverCompare "<1.19-0" (include "api.capabilities.kubeVersion" .) -}}
+{{- else if semverCompare "<1.19-0" (include "v1.capabilities.kubeVersion" .) -}}
 {{- print "networking.k8s.io/v1beta1" -}}
 {{- else -}}
 {{- print "networking.k8s.io/v1" -}}
@@ -41,8 +41,8 @@ Return the appropriate apiVersion for ingress.
 {{/*
 Return the appropriate apiVersion for RBAC resources.
 */}}
-{{- define "api.capabilities.rbac.apiVersion" -}}
-{{- if semverCompare "<1.17-0" (include "api.capabilities.kubeVersion" .) -}}
+{{- define "v1.capabilities.rbac.apiVersion" -}}
+{{- if semverCompare "<1.17-0" (include "v1.capabilities.kubeVersion" .) -}}
 {{- print "rbac.authorization.k8s.io/v1beta1" -}}
 {{- else -}}
 {{- print "rbac.authorization.k8s.io/v1" -}}
@@ -55,7 +55,7 @@ A way to check the used Helm version was not introduced until version 3.3.0 with
 This check is introduced as a regexMatch instead of {{ if .Capabilities.HelmVersion }} because checking for the key HelmVersion in <3.3 results in a "interface not found" error.
 **To be removed when the catalog's minimun Helm version is 3.3**
 */}}
-{{- define "api.capabilities.supportsHelmVersion" -}}
+{{- define "v1.capabilities.supportsHelmVersion" -}}
 {{- if regexMatch "{(v[0-9])*[^}]*}}$" (.Capabilities | toString ) }}
   {{- true -}}
 {{- end -}}
