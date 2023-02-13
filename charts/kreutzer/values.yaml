@@ -8,8 +8,6 @@ global:
   imagePullSecrets: []
   storageClass: ""
 
-replicaCount: 1
-
 kubeVersion: ""
 
 clusterDomain: cluster.local
@@ -22,67 +20,37 @@ diagnosticMode:
   enabled: false
 
 imagePullSecrets: []
+
 nameOverride: ""
 fullnameOverride: ""
 
+logLevel: debug
 
 serviceAccount:
-  # Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-#externalURL: https://core.mydomain.com
-
-#internalTLS:
-#  enabled: false
-#  tlsSecret: ""
-
-#ipFamily:
-#  ipv4:
-#    enabled: true
-#  ipv6:
-#    enabled: true
-
-# Exposure type.
-#   - Ingress (*)
-#   - Proxy
 exposureType: Ingress
 
 service:
-  type: ClusterIP
-  port: 80
-
-proxy:
-  httpProxy: ""
-  httpsProxy: ""
-  noProxy: ""
-  components:
-    - ""
+  core:
+    type: ClusterIP
+    ports:
+      http: 80
+      https: 443
 
 ingress:
   core:
+    hostname: core.domain.com
+    path: /api/(.*)
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-    hosts:
-      - host: core.domain.com
-        paths:
-          - path: /api/v1/(.*)
-            pathType: ImplementationSpecific
-  #        backend:
-  #          service:
-  #            name: core
-  #            port:
-  #              number: 8080
+      nginx.ingress.kubernetes.io/use-regex: "true"
   portal:
-    hosts:
-      - host: core.domain.com
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    hostname: core.domain.com
+    annotations: {}
+    tls: false
 
 
 persistence:
@@ -135,6 +103,10 @@ components:
         [ -n "${TRANSIT_ADDR}" ] && sed -Ei "s|TRANSIT_ADDR|${TRANSIT_ADDR?}|g" /tmp/storageconfig.hcl;
         [ -n "${RAFT_ADDR}" ] && sed -Ei "s|RAFT_ADDR|${RAFT_ADDR?}|g" /tmp/storageconfig.hcl;
         /usr/local/bin/docker-entrypoint.sh vault server -config=/tmp/storageconfig.hcl
+    ports:
+      tcp:
+        server: 5432
+
     env:
       - name: PGDATA
         value: /var/lib/postgresql/data/pgdata

@@ -13,26 +13,63 @@ metadata:
   name: {{ $root.Release.Name }}-{{ $ingressName }}
   namespace: {{ $root.Release.Namespace }}
   labels:
-    "app.kubernetes.io/name": {{ $root.Chart.Name }}
-    "app.kubernetes.io/component": {{ $ingressName }}
-  annotations: {}
+    "app.kubernetes.io/name": {{ quote $root.Chart.Name }}
+    "app.kubernetes.io/component": {{ quote $ingressName }}
+  annotations: {{ toYaml $ingress.annotations | nindent 4 }}
 spec:
-{{/*  {{- include "v1.networking.ingress.ingressclass" $ingress | nindent 2 -}}*/}}
   rules:
-    - host: core.domain.com
+    - host: {{ $ingress.hostname }}
       http:
         paths:
-          - path: /
-            pathType: ImplementationSpecific
+          - path: {{ $ingress.path }}
+            pathType: {{ $ingress.pathType | default "ImplementationSpecific" }}
             backend:
+              {{- if true }}
               service:
                 name: {{ $root.Release.Name }}-{{ $ingressName }}
                 port:
-                  number: 8080
+                  number: 80
+              {{- else -}}
+              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              servicePort: 80
+              {{- end -}}
+          {{- range $extraPath := $ingress.extraPaths -}}
+          - path: {{ $extraPath.path }}
+            pathType: {{ $extraPath.pathType | default "ImplementationSpecific" }}
+              backend:
+              {{- if true }}
+              service:
+                name: {{ $root.Release.Name }}-{{ $ingressName }}
+                port:
+                  number: 80
+              {{- else -}}
+              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              servicePort: 80
+              {{- end -}}
+          {{- end -}}
+    {{- if $ingress.extraHosts -}}
+    {{- range $extraHost := $ingress.extraHosts -}}
+    - host: {{ $extraHost.name }}
+      http:
+        paths:
+          - path: {{ $extraHost.path }}
+            pathType: {{ $extraHost.pathType | default "ImplementationSpecific" }}
+              backend:
+              {{- if true }}
+              service:
+                name: {{ $root.Release.Name }}-{{ $ingressName }}
+                port:
+                  number: 80
+              {{- else -}}
+              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              servicePort: 80
+              {{- end -}}
+    {{- end -}}
+    {{- end -}}
   {{- if $ingress.tls }}
   tls:
     - hosts:
-      - core.domain.com
+      - {{ $ingress.hostname }}
       secretName: ""
   {{- end }}
 ---

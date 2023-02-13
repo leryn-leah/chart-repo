@@ -53,7 +53,7 @@ imagePullSecrets: {{ .pullSecrets }}
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.command" -}}
-{{- if .command }}
+{{- if .command -}}
 command:
 {{- range $commandSeg := .command }}
   - {{ quote $commandSeg }}
@@ -66,7 +66,7 @@ command:
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.args" -}}
-{{- if .args }}
+{{- if .args -}}
 args:
 {{- range $arg := .args }}
   - {{ quote $arg }}
@@ -93,10 +93,12 @@ ports:
   {{- if .ports.http }}
   - name: http
     containerPort: {{ .ports.http }}
+    protocol: TCP
   {{- end -}}
   {{- if .ports.https }}
   - name: https
     containerPort: {{ .ports.https }}
+    protocol: TCP
   {{- end -}}
   {{- if .ports.tcp }}
   {{- range $portName, $port := .ports.tcp }}
@@ -110,6 +112,13 @@ ports:
   - name: {{ $portName }}
     containerPort: {{ $port }}
     protocol: UDP
+  {{- end -}}
+  {{- end -}}
+  {{- if .ports.sctp }}
+  {{- range $portName, $port := .ports.sctp }}
+  - name: {{ $portName }}
+    containerPort: {{ $port }}
+    protocol: SCTP
   {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -132,6 +141,9 @@ env:
       fieldRef:
         apiVersion: v1
         fieldPath: metadata.name
+ {{- if .env }}
+ {{ .env | toYaml | nindent 2 }}
+ {{- end }}
 envFrom: []
 {{- end -}}
 
@@ -157,7 +169,7 @@ resources:
 */}}
 {{- define "v1.workload.application.volumeMounts" -}}
 volumeMounts:
-{{- if .configMaps }}
+{{- if .configMaps -}}
 {{- range $configMapName, $configMap := .configMaps }}
   - name: {{ $configMapName }}
     mountPath: {{ $configMap.mountPath }}
@@ -179,7 +191,7 @@ readinessProbe: {}
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.lifecycle" -}}
-{{- if .lifecycle }}
+{{- if .lifecycle -}}
 lifecycle:
   {{- .lifecycle | toYaml | nindent 2 }}
 {{- end -}}
