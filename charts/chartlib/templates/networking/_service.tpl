@@ -1,7 +1,7 @@
 {{- /* vim: set filetype=mustache: */}}
 
 {{- define "v1.networking.service" -}}
-{{- $root := . -}}
+{{- $context := . -}}
 {{- range $serviceName, $service := .Values.service -}}
 {{- /*{{- if $service.enabled }}*/}}
 apiVersion: v1
@@ -9,20 +9,18 @@ kind: Service
 metadata:
   name: kreutzer-vault
   namespace: kreutzer
-  labels:
-    "app.kubernetes.io/name": {{ quote $root.Chart.Name }}
-    "app.kubernetes.io/component": {{ quote $serviceName }}
-  annotations: {}
+  labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $serviceName) | nindent 4 }}
+  annotations: {{- include "v1.helper.meta.annotations" (dict "context" $context "component" $serviceName) | nindent 4 }}
 spec:
   type: ClusterIP
-{{- /*  {{- $ipv4Enabled := ternary $root.ipFamily.ipv4 $root.ipFamily.ipv4 $root.ipFamily.ipv4.enabled -}}*/}}
-{{- /*  {{- $ipv6Enabled := ternary $root.ipFamily.ipv6 $root.ipFamily.ipv6 $root.ipFamily.ipv6.enabled -}}*/}}
+{{- /*  {{- $ipv4Enabled := ternary $context.ipFamily.ipv4 $context.ipFamily.ipv4 $context.ipFamily.ipv4.enabled -}}*/}}
+{{- /*  {{- $ipv6Enabled := ternary $context.ipFamily.ipv6 $context.ipFamily.ipv6 $context.ipFamily.ipv6.enabled -}}*/}}
 {{- /*  {{- if and $ipv4Enabled $ipv6Enabled -}}*/}}
 {{- /*  ipFamilies:*/}}
-{{- /*  {{- if ternary $root.ipFamily.ipv4 $root.ipFamily.ipv4 $root.ipFamily.ipv4.enabled -}}*/}}
+{{- /*  {{- if ternary $context.ipFamily.ipv4 $context.ipFamily.ipv4 $context.ipFamily.ipv4.enabled -}}*/}}
 {{- /*  - IPv4*/}}
 {{- /*  {{- end -}}*/}}
-{{- /*  {{- if ternary $root.ipFamily.ipv6 $root.ipFamily.ipv6 $root.ipFamily.ipv6.enabled -}}*/}}
+{{- /*  {{- if ternary $context.ipFamily.ipv6 $context.ipFamily.ipv6 $context.ipFamily.ipv6.enabled -}}*/}}
 {{- /*  - IPv6*/}}
 {{- /*  {{- end -}}*/}}
 {{- /*  {{- end -}}*/}}
@@ -66,8 +64,7 @@ spec:
     {{- end -}}
   {{- end }}
   selector:
-    "app.kubernetes.io/name": {{ quote $root.Chart.Name }}
-    "app.kubernetes.io/component": {{ quote $serviceName }}
+    {{- include "v1.helper.meta.labels" (dict "context" $context "component" $serviceName) | nindent 4 }}
 ---
 {{- end -}}
 {{- end -}}

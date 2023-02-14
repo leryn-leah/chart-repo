@@ -14,8 +14,6 @@ clusterDomain: cluster.local
 
 commonAnnotations: {}
 
-commonLabels: {}
-
 diagnosticMode:
   enabled: false
 

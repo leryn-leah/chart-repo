@@ -1,3 +1,5 @@
+{{- /* vim: set filetype=mustache: */}}
+
 {{- define "apis.v1.all" -}}
 {{- include "v1.config.configmap" . -}}
 {{- include "v1.config.secret" . -}}

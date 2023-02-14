@@ -1,0 +1,151 @@
+# Default values for kreutzer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  kubeVersion: ""
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+kubeVersion: ""
+
+#clusterDomain: cluster.local
+
+commonAnnotations: {}
+
+commonLabels: {}
+
+diagnosticMode:
+  enabled: false
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Log Level: The application should handle the log level manually by itself.
+#   - fatal
+#   - error
+#   - warn
+#   - info
+#   - debug (*)
+#   - trace
+logLevel: debug
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+#externalURL: https://core.mydomain.com
+
+#internalTLS:
+#  enabled: false
+#  tlsSecret: ""
+
+# IP family parameters.
+ipFamily:
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: true
+
+# Exposure type.
+#   - Ingress (*)
+#   - Proxy
+exposureType: Ingress
+
+service:
+  <Application>:
+    type: ClusterIP
+    ports:
+      http: 80
+      https: 443
+    nodePorts:
+      http: 30080
+      https: 30443
+    sessionAffinity: None
+
+proxy:
+  httpProxy: ""
+  httpsProxy: ""
+  noProxy: 127.0.0.1,localhost,.local,.internal
+  components:
+    - ""
+
+ingress:
+  <Application>:
+    ingressClassName:
+    controller: default
+    hostname: www.domain.com
+    # Default path is `/`.
+    path: /
+    pathType: ImplementationSpecific
+    annotations: {}
+    tls: false
+    selfSigned: false
+    # ```yaml
+    # extraHosts:
+    #   - name: www.domain.com
+    #     path: /
+    # ```
+    extraHosts: []
+    #
+    # ```yaml
+    # - path: /*
+    #   backend:
+    #     serviceName: <Application>
+    #     servicePort: 80
+    # ```
+    extraPaths: []
+
+persistence:
+  enabled: true
+  resourcePolicy: 'keep'
+  persistentVolumeClaim: {}
+  accessModes:
+    - ReadOnlyMany
+
+volumePermissions:
+  enabled: false
+
+components:
+  <Application>:
+    enabled: true
+    # Pod controller type:
+    #  - StatefulSet
+    #  -
+    type: StatefulSet
+    image:
+      registry: docker.io
+      repository:
+      tag: 1.12.2
+    ports:
+      http: 80
+      https: 443
+      tcp:
+        <PortName1>: 8080
+        <PortName2>: 8081
+      udp:
+        <PortName1>: 8000
+        <PortName2>: 8001
+      sctp:
+        <PortName1>: 9000
+        <PortName2>: 9001
+    configMaps:
+      <ConfigMapName>:
+        type: File
+        projectPath: path/to/project/file
+        mountPath: /path/to/mount/in/container
+    lifecycle: {}
+    securityContext:
+      privileged: true
+    initContainers: []
+    sidecars: []
+
+debug: false

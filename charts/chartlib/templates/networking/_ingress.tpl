@@ -4,33 +4,31 @@
 
 */}}
 {{- define "v1.networking.ingress" -}}
-{{ $root := . }}
+{{ $context := . }}
 {{- if eq (title .Values.exposureType) "Ingress" }}
 {{- range $ingressName, $ingress := .Values.ingress }}
-apiVersion: {{ include "v1.capabilities.ingress.apiVersion" $root }}
+apiVersion: {{ include "v1.capabilities.ingress.apiVersion" $context }}
 kind: Ingress
 metadata:
-  name: {{ $root.Release.Name }}-{{ $ingressName }}
-  namespace: {{ $root.Release.Namespace }}
-  labels:
-    "app.kubernetes.io/name": {{ quote $root.Chart.Name }}
-    "app.kubernetes.io/component": {{ quote $ingressName }}
+  name: {{ $context.Release.Name }}-{{ $ingressName }}
+  namespace: {{ $context.Release.Namespace }}
+  labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $ingressName) | nindent 4 }}
   annotations: {{ toYaml $ingress.annotations | nindent 4 }}
 spec:
   rules:
     - host: {{ $ingress.hostname }}
       http:
         paths:
-          - path: {{ $ingress.path }}
+          - path: {{ $ingress.path | default "/" }}
             pathType: {{ $ingress.pathType | default "ImplementationSpecific" }}
             backend:
               {{- if true }}
               service:
-                name: {{ $root.Release.Name }}-{{ $ingressName }}
+                name: {{ $context.Release.Name }}-{{ $ingressName }}
                 port:
                   number: 80
               {{- else -}}
-              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              serviceName: {{ $context.Release.Name }}-{{ $ingressName }}
               servicePort: 80
               {{- end -}}
           {{- range $extraPath := $ingress.extraPaths -}}
@@ -39,11 +37,11 @@ spec:
               backend:
               {{- if true }}
               service:
-                name: {{ $root.Release.Name }}-{{ $ingressName }}
+                name: {{ $context.Release.Name }}-{{ $ingressName }}
                 port:
                   number: 80
               {{- else -}}
-              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              serviceName: {{ $context.Release.Name }}-{{ $ingressName }}
               servicePort: 80
               {{- end -}}
           {{- end -}}
@@ -57,11 +55,11 @@ spec:
               backend:
               {{- if true }}
               service:
-                name: {{ $root.Release.Name }}-{{ $ingressName }}
+                name: {{ $context.Release.Name }}-{{ $ingressName }}
                 port:
                   number: 80
               {{- else -}}
-              serviceName: {{ $root.Release.Name }}-{{ $ingressName }}
+              serviceName: {{ $context.Release.Name }}-{{ $ingressName }}
               servicePort: 80
               {{- end -}}
     {{- end -}}

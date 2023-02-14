@@ -5,7 +5,7 @@
 {{- end -}}
 
 {{- define "v1.config.secret.opaque" -}}
-{{- $root := . -}}
+{{- $context := . -}}
 {{- $operator := . -}}
 {{- range $applicationName, $application := .Values.components -}}
 {{- if $application.enabled }}
@@ -14,11 +14,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ $secretName }}
-  namespace: {{ $root.Release.Namespace }}
-  labels:
-    "app.kubernetes.io/name": {{ quote $root.Chart.Name }}
-    "app.kubernetes.io/component": {{ quote $applicationName }}
-  annotations: {}
+  namespace: {{ $context.Release.Namespace }}
+  labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $applicationName) | nindent 4 }}
+  annotations: {{- include "v1.helper.meta.annotations" (dict "context" $context "component" $applicationName) | nindent 4 }}
 type: Opaque
 stringData:
   {{- range $entryKey, $entryValue := $secret }}
@@ -29,19 +27,6 @@ stringData:
 {{- end -}}
 {{- end -}}
 {{- end -}}
-
-{{/*{{- if .Values.debug -}}*/}}
-{{/*---*/}}
-{{/*apiVersion: v1*/}}
-{{/*kind: Secret*/}}
-{{/*metadata:*/}}
-{{/*  name: ""*/}}
-{{/*  namespace: ""*/}}
-{{/*  annotations: {}*/}}
-{{/*  labels: {}*/}}
-{{/*type: Opaque*/}}
-{{/*stringData: {}*/}}
-{{/*{{- end -}}*/}}
 
 {{/*{{- if .Values.debug -}}*/}}
 {{/*---*/}}
