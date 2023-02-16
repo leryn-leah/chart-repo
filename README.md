@@ -6,12 +6,16 @@ All my charts lie here.
 
 ## Table of Contents
 
+- [Usage](#usage)
 - [Prerequisites](#prerequisites)
 - [Build](#build)
-- [Usage](#usage)
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
 - [License](#license)
+
+## Usage
+
+All my charts lie here.
 
 ## Prerequisites
 
@@ -58,10 +62,6 @@ helm repo add leryn https://harbor.leryn.top/chartrepo/library
 
 bin/build_template.sh
 ```
-
-## Usage
-
-All my charts lie here.
 
 ## Related Efforts
 
