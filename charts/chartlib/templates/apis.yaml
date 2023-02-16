@@ -3,9 +3,7 @@
 {{- define "apis.v1.all" -}}
 {{- include "v1.config.configmap" . -}}
 {{- include "v1.config.secret" . -}}
-{{- include "v1.workload.daemonset" . -}}
-{{- include "v1.workload.deployment" . -}}
-{{- include "v1.workload.statefulset" . -}}
+{{- include "v1.workload.podController" . -}}
 {{- include "v1.networking.ingress" . -}}
 {{- include "v1.networking.service" . -}}
 {{- end -}}

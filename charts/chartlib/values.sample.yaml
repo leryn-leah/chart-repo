@@ -147,5 +147,6 @@ components:
       privileged: true
     initContainers: []
     sidecars: []
+    volumeMounts: []
 
 debug: false

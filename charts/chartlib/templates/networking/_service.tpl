@@ -7,7 +7,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kreutzer-vault
+  name: {{ $context.Release.Name }}-{{ $serviceName }}
   namespace: kreutzer
   labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $serviceName) | nindent 4 }}
   annotations: {{- include "v1.helper.meta.annotations" (dict "context" $context "component" $serviceName) | nindent 4 }}
@@ -63,8 +63,7 @@ spec:
     {{- end -}}
     {{- end -}}
   {{- end }}
-  selector:
-    {{- include "v1.helper.meta.labels" (dict "context" $context "component" $serviceName) | nindent 4 }}
+  selector: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $serviceName) | nindent 4 }}
 ---
 {{- end -}}
 {{- end -}}

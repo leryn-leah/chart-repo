@@ -36,7 +36,7 @@ spec:
       {{- range $initContainer := $application.initContainers }}
         -
           name: {{ $initContainer.name }}
-          {{- include "v1.workload.application.container" $initContainer | nindent 10 }}
+          {{- include "v1.workload.application.container" (omit $initContainer "securityContext" "volumes" "initContainers" "sidecars")  | nindent 10 }}
       {{- end }}
       {{- end }}
       containers:
@@ -47,11 +47,11 @@ spec:
         {{- range $sidecar := $application.sidecars }}
         -
           name: {{ $sidecar.name }}
-          {{- include "v1.workload.application.container" $sidecar | nindent 10 }}
+          {{- include "v1.workload.application.container" (omit $sidecar "securityContext" "volumes" "initContainers" "sidecars")  | nindent 10 }}
         {{- end }}
         {{- end }}
+      {{- include "v1.workload.application.podSecurityContext" $application | nindent 6 }}
       {{- include "v1.workload.application.volumes" $application | nindent 6 }}
-      {{- include "v1.workload.application.securityContext" $application | nindent 6 }}
 ---
 {{- end -}}
 {{- end -}}
@@ -70,6 +70,7 @@ spec:
 {{ include "v1.workload.application.env" . }}
 {{ include "v1.workload.application.resources" . }}
 {{ include "v1.workload.application.lifecycle" . }}
+{{ include "v1.workload.application.securityContext" . }}
 {{ include "v1.workload.application.volumeMounts" . }}
 {{- end -}}
 
@@ -199,10 +200,18 @@ env:
       fieldRef:
         apiVersion: v1
         fieldPath: metadata.name
- {{- if .env }}
- {{ .env | toYaml | nindent 2 }}
- {{- end }}
-envFrom: []
+  {{- if .env }}
+  {{ .env | toYaml | nindent 2 }}
+  {{- end }}
+{{- if .secrets }}
+envFrom:
+  {{- if .secrets -}}
+  {{- range $secretName, $secret := .secrets }}
+  - secretRef:
+      name: {{ $secretName }}
+  {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*
@@ -212,6 +221,14 @@ envFrom: []
 {{- if .resources -}}
 resources:
   {{- .resources | toYaml | nindent 2 }}
+{{- else -}}
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 50m
+    memory: 128Mi
 {{- end -}}
 {{- end -}}
 
@@ -226,16 +243,19 @@ resources:
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.volumeMounts" -}}
-{{- $volumeMountsEnabled := not (empty .configMaps) -}}
+{{- $volumeMountsEnabled := or (not (empty .volumeMounts)) (not (empty .configMaps)) -}}
 {{- if $volumeMountsEnabled -}}
 volumeMounts:
-{{- if .configMaps -}}
-{{- range $configMapName, $configMap := .configMaps }}
+  {{- if .volumeMounts -}}
+  {{- .volumeMounts | toYaml | nindent 2 }}
+  {{- end -}}
+  {{- if .configMaps -}}
+  {{- range $configMapName, $configMap := .configMaps }}
   - name: {{ $configMapName }}
     mountPath: {{ $configMap.mountPath }}
     subPath: {{ base $configMap.mountPath }}
-{{- end -}}
-{{- end -}}
+  {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -243,7 +263,6 @@ volumeMounts:
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.healthcheck" -}}
-
 livenessProbe: {}
 readinessProbe: {}
 {{- end -}}
@@ -262,13 +281,39 @@ lifecycle:
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.volumes" -}}
-volumes: []
+{{- $volumesEnabled := or (not (empty .volumes)) (not (empty .configMaps)) }}
+{{- if $volumesEnabled -}}
+volumes:
+  {{- if .volumeMounts -}}
+  {{- .volumes | toYaml | nindent 2 }}
+  {{- end -}}
+  {{- if .configMaps -}}
+  {{- range $configMapName, $configMap := .configMaps }}
+  - name: {{ $configMapName }}
+    configMap:
+      name: {{ $configMapName }}
+      defaultMode: 420
+  {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.securityContext" -}}
-securityContext: {}
+{{- if .securityContext -}}
+securityContext:
+  {{- .securityContext | toYaml | nindent 2 }}
+{{- end -}}
 {{- end -}}
 
+{{- /*
+  - In: .Values.<Application>
+*/}}
+{{- define "v1.workload.application.podSecurityContext" -}}
+{{- if .podSecurityContext -}}
+securityContext:
+  {{- .podSecurityContext | toYaml | nindent 2 }}
+{{- end -}}
+{{- end -}}
