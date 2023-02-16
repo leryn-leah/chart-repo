@@ -50,7 +50,7 @@ Higher than Helm v3.7.0, `helm push` becomes the helm built-in command by offici
 Use the bash script to vendor the helm chart locally under the `charts/*`
 
 ```bash
-bin/vendor_template.sh sample
+bin/redner_template.sh sample
 cat .sample-charts.yaml
 ```
 
