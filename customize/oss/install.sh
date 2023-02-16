@@ -14,7 +14,7 @@ helm install minio minio/minio -n oss \
   --set persistence.size=5Gi                           \
   --set replicas=1                                     \
   --set resources.requests.memory=128Mi                \
-  --set rootPassword=W0X1angTa0                        \
+  --set rootPassword=xxxxxxxxxx                        \
   --set rootUser=admin                                 \
   --set securityContext.fsGroup=0                      \
   --set securityContext.runAsUser=0                    \
