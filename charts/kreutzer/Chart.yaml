@@ -25,4 +25,5 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: chartlib
+#    repository: https://harbor.leryn.top/chartrepo/library
     version: 0.1.0
