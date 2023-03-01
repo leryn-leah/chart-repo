@@ -147,6 +147,14 @@ components:
       privileged: true
     initContainers: []
     sidecars: []
+    predefinedInitContainers:
+      - name: ""
+        type: ""
+        vars: {}
+    predefinedSidecars:
+      - name: ""
+        type: ""
+        vars: {}
     volumeMounts: []
 
 debug: false

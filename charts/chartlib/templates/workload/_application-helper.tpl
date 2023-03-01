@@ -1,63 +1,5 @@
 {{- /* vim: set filetype=mustache: */}}
 
-{{- define "v1.workload.podController" -}}
-{{- $context := . }}
-{{- range $applicationName, $application := .Values.components -}}
-{{- if $application.enabled -}}
-{{- $type := title $application.type -}}
-{{- if has $type (list "Deployment" "StatefulSet" "DaemonSet") }}
-apiVersion: apps/v1
-kind: {{ $type }}
-metadata:
-  name: {{ $context.Release.Name }}-{{ $applicationName }}
-  namespace: {{ $context.Release.Namespace }}
-  labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $applicationName) | nindent 4 }}
-  annotations: {{- include "v1.helper.meta.annotations" (dict "context" $context "component" $applicationName) | nindent 4 }}
-spec:
-  {{- if eq $type "StatefulSet" }}
-  serviceName: {{ $context.Release.Name }}-{{ $applicationName }}
-  {{- end }}
-  {{- if has $type (list "StatefulSet" "DaemonSet") }}
-  updateStrategy:
-    type: RollingUpdate
-  {{- end }}
-  replicas: {{ include "v1.workload.application.replicas" $application }}
-  selector:
-    matchLabels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $applicationName) | nindent 6 }}
-  template:
-    metadata:
-      labels: {{- include "v1.helper.meta.labels" (dict "context" $context "component" $applicationName) | nindent 8 }}
-      annotations: {{- include "v1.helper.meta.annotations" (dict "context" $context "component" $applicationName) | nindent 8 }}
-    spec:
-      automountServiceAccountToken: false
-      restartPolicy: Always
-      {{- if $application.initContainers }}
-      initContainers:
-      {{- range $initContainer := $application.initContainers }}
-        -
-          name: {{ $initContainer.name }}
-          {{- include "v1.workload.application.container" (omit $initContainer "securityContext" "volumes" "initContainers" "sidecars")  | nindent 10 }}
-      {{- end }}
-      {{- end }}
-      containers:
-        -
-          name: {{ $applicationName }}
-          {{- include "v1.workload.application.container" $application | nindent 10 }}
-        {{- if $application.sidecars }}
-        {{- range $sidecar := $application.sidecars }}
-        -
-          name: {{ $sidecar.name }}
-          {{- include "v1.workload.application.container" (omit $sidecar "securityContext" "volumes" "initContainers" "sidecars")  | nindent 10 }}
-        {{- end }}
-        {{- end }}
-      {{- include "v1.workload.application.podSecurityContext" $application | nindent 6 }}
-      {{- include "v1.workload.application.volumes" $application | nindent 6 }}
----
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
 {{- /*
   Container template
   - In: .Values.<Application>
@@ -224,8 +166,8 @@ resources:
 {{- else -}}
 resources:
   limits:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 500m
+    memory: 512Mi
   requests:
     cpu: 50m
     memory: 128Mi
@@ -263,8 +205,20 @@ volumeMounts:
   - In: .Values.<Application>
 */}}
 {{- define "v1.workload.application.healthcheck" -}}
-livenessProbe: {}
-readinessProbe: {}
+livenessProbe:
+{{- if .livenessProbe }}
+  {}
+{{- else }}
+  tcpSocket:
+    port: http
+{{- end -}}
+readinessProbe:
+{{- if .livenessProbe }}
+  {}
+{{- else }}
+  tcpSocket:
+    port: http
+{{- end -}}
 {{- end -}}
 
 {{- /*
@@ -284,9 +238,38 @@ lifecycle:
 {{- $volumesEnabled := or (not (empty .volumes)) (not (empty .configMaps)) }}
 {{- if $volumesEnabled -}}
 volumes:
-  {{- if .volumeMounts -}}
-  {{- .volumes | toYaml | nindent 2 }}
+{{- $volumeMap := dict "" "" -}}
+{{- if .volumes -}}
+{{- range $volume := .volumes -}}
+  {{- $_ := set $volumeMap $volume.name $volume }}
+{{- end -}}
+{{- end -}}
+
+{{- if .sidecars -}}
+{{- range $sidecar := .sidecars -}}
+  {{- if .volumes -}}
+  {{- range $volume := .volumes -}}
+  {{- $_ := set $volumeMap $volume.name $volume -}}
   {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- if .initContainers -}}
+{{- range $initContainer := .initContainers -}}
+  {{- if .volumes -}}
+  {{- range $volume := .volumes -}}
+  {{- $_ := set $volumeMap $volume.name $volume -}}
+  {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+  {{- /* Merge the persistent volumes by name. */}}
+  {{- if not (empty $volumeMap) -}}
+  {{- values (omit $volumeMap "") | toYaml | nindent 2 }}
+  {{- end -}}
+
   {{- if .configMaps -}}
   {{- range $configMapName, $configMap := .configMaps }}
   - name: {{ $configMapName }}
@@ -316,4 +299,9 @@ securityContext:
 securityContext:
   {{- .podSecurityContext | toYaml | nindent 2 }}
 {{- end -}}
+{{- end -}}
+
+
+{{- define "v1.workload.podController.omitFields" -}}
+{{ omit . "securityContext" "volumes" "initContainers" "sidecars" }}
 {{- end -}}
