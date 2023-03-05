@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "global": {
+      "properties": {
+        "imagePullSecrets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "imageRegistry": {
+          "type": "string"
+        },
+        "kubeVersion": {
+          "type": "string"
+        },
+        "storageClass": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "kubeVersion": {
+      "type": "string"
+    },
+    "clusterDomain": {
+      "type": "string"
+    },
+    "logLevel": {
+      "enum": [
+        "trace",
+        "info",
+        "debug",
+        "warn",
+        "fatal",
+        "error"
+      ],
+      "type": "string"
+    },
+    "exposureType": {
+      "enum": [
+        "Ingress",
+        "Proxy"
+      ],
+      "type": "string"
+    },
+    "components": {
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "$ref": "#/$defs/component"
+        }
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "ingress": {
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "properties": {
+            "hostname": {
+              "type": "string",
+              "format": "hostname"
+            },
+            "path": {
+              "type": "string"
+            },
+            "annotations": {
+              "patternProperties": {
+                "^[a-zA-Z0-9_/.-]+$": {
+                  "type": "string"
+                },
+                "unevaluatedProperties": false
+              },
+              "type": "object",
+              "unevaluatedProperties": false
+            },
+            "tls": {
+              "type": "boolean"
+            }
+          },
+          "type": "object",
+          "unevaluatedProperties": false
+        }
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "persistentVolumeClaim": {
+          "type": "object"
+        },
+        "resourcePolicy": {
+          "type": "string"
+        }
+      }
+    },
+    "service": {
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "properties": {
+            "ports": {
+              "$ref": "#/$defs/ports"
+            }
+          },
+          "type": "object",
+          "unevaluatedProperties": false
+        }
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "volumePermissions": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "stringValueMap": {
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "type": "string"
+        },
+        "unevaluatedProperties": false
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "intValueMap": {
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "type": "integer"
+        },
+        "unevaluatedProperties": false
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "component": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Deployment",
+            "StatefulSet",
+            "DaemonSet"
+          ]
+        },
+        "image": {
+          "properties": {
+            "registry": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository"
+          ],
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "command": {
+          "description": "Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "args": {
+          "description": "Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "ports": {
+          "$ref": "#/$defs/ports"
+        },
+        "configMaps": {
+          "patternProperties": {
+            "^[a-zA-Z0-9_/-]+$": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "File"
+                  ],
+                  "type": "string"
+                },
+                "projectPath": {
+                  "type": "string"
+                },
+                "mountPath": {
+                  "type": "string"
+                }
+              },
+              "type": "object",
+              "unevaluatedProperties": false
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "env": {
+          "description": "List of environment variables to set in the container. Cannot be updated.",
+          "items": {
+            "description": "EnvVar represents an environment variable present in a Container.",
+            "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+          },
+          "type": "array",
+          "uniqueItems": true,
+          "unevaluatedProperties": false
+        },
+        "secrets": {
+          "patternProperties": {
+            "^[a-zA-Z0-9_/-]+$": {
+              "$ref": "#/$defs/stringValueMap"
+            }
+          },
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "resources": {
+          "description": "ResourceRequirements describes the compute resource requirements.",
+          "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements",
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "lifecycle": {
+          "description": "Lifecycle describes actions that the management system should take in response to container lifecycle events. For the PostStart and PreStop lifecycle handlers, management of the container blocks until the action is complete, unless the container process fails, in which case the handler is aborted.",
+          "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Lifecycle",
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "podSecurityContext": {
+          "description": "PodSecurityContext holds pod-level security attributes and common container settings. Some fields are also present in container.securityContext.    Field values of container.securityContext take precedence over field values of PodSecurityContext.",
+          "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "securityContext": {
+          "description": "SecurityContext holds security configuration that will be applied to a container. Some fields are present in both SecurityContext and PodSecurityContext.    When both are set, the values in SecurityContext take precedence.",
+          "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext",
+          "type": "object",
+          "unevaluatedProperties": false
+        },
+        "volumes": {
+          "description": "Volume represents a named volume in a pod that may be accessed by any container in the pod.",
+          "items": {
+            "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Volume"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "volumeMounts": {
+          "description": "Pod volumes to mount into the container's filesystem. Cannot be updated.",
+          "items": {
+            "$ref": "https://kubernetesjsonschema.dev/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "initContainers": {
+          "items": {
+            "$ref": "#/$defs/component"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "sidecars": {
+          "items": {
+            "$ref": "#/$defs/component"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "predefinedInitContainers": {
+          "items": {
+            "$ref": "#/$defs/predefinedContainer"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "predefinedSidecars": {
+          "items": {
+            "$ref": "#/$defs/predefinedContainer"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "image"
+      ],
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "ports": {
+      "properties": {
+        "http": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "https": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tcp": {
+          "$ref": "#/$defs/intValueMap"
+        },
+        "udp": {
+          "$ref": "#/$defs/intValueMap"
+        }
+      },
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "predefinedContainer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "vars": {
+          "$ref": "#/$defs/stringValueMap"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

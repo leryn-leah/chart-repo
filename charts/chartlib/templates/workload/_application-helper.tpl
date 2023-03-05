@@ -238,7 +238,7 @@ lifecycle:
 {{- $volumesEnabled := or (not (empty .volumes)) (not (empty .configMaps)) }}
 {{- if $volumesEnabled -}}
 volumes:
-{{- $volumeMap := dict "" "" -}}
+{{- $volumeMap := dict -}}
 {{- if .volumes -}}
 {{- range $volume := .volumes -}}
   {{- $_ := set $volumeMap $volume.name $volume }}
@@ -267,7 +267,7 @@ volumes:
 
   {{- /* Merge the persistent volumes by name. */}}
   {{- if not (empty $volumeMap) -}}
-  {{- values (omit $volumeMap "") | toYaml | nindent 2 }}
+  {{- values $volumeMap | toYaml | nindent 2 }}
   {{- end -}}
 
   {{- if .configMaps -}}
