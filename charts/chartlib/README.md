@@ -40,7 +40,7 @@ yajsv -s values.schema.json values.yaml
 
 or validate schema online:
 
-[http://json-schema.org/understanding-json-schema/index.html](http://json-schema.org/understanding-json-schema/index.html)
+[https://www.jsonschemavalidator.net/](https://www.jsonschemavalidator.net/)
 
 Reference:
 - [http://json-schema.org/understanding-json-schema/index.html](http://json-schema.org/understanding-json-schema/index.html)
