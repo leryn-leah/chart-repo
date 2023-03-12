@@ -326,3 +326,4 @@ $RECYCLE.BIN/
 !/bin
 
 charts/*/charts/**
+charts/*/*/charts/**

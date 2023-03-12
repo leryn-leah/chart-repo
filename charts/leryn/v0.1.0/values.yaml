@@ -1,0 +1,69 @@
+# Default values for leryn.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  kubeVersion: ""
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+logLevel: debug
+
+exposureType: Ingress
+
+service:
+  frontend:
+    ports:
+      http: 80
+  backend:
+    ports:
+      http: 8080
+
+ingress:
+  frontend:
+    hostname: leryn.top
+    path: /
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 1G
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  backend:
+    hostname: leryn.top
+    path: /api/(.*)
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 1G
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+components:
+  frontend:
+    enabled: true
+    image:
+      repository: homepage-frontend
+      registry: harbor.leryn.top/library
+      tag: 0.1.0
+    ports:
+      http: 80
+  backend:
+    enabled: true
+    image:
+      repository: homepage-backend
+      registry: harbor.leryn.top/library
+      tag: 0.1.0
+    ports:
+      http: 8080
+#    args:
+#      - "-c"
+#      - "/etc/config.toml"
+    env:
+      - name: DB_HOST
+        value: "101.35.147.241"
+      - name: DB_PORT
+        value: "3306"
+      - name: DB_SCHEME
+        value: "homepage"
+      - name: DB_USERNAME
+        value: "scott"
+      - name: DB_PASSWORD
+        value: "907BR1jQ05P3hxBu"

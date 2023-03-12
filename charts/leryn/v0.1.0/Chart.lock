@@ -1,0 +1,6 @@
+dependencies:
+- name: chartlib
+  repository: https://harbor.leryn.top/chartrepo/library
+  version: 0.1.0
+digest: sha256:01e287a1c85683f115857bfeacd3738755f8caa1dddafa5d58e1c54f2c7e9436
+generated: "2023-03-12T22:13:33.86537+08:00"
