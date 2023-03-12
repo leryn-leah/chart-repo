@@ -1,7 +1,0 @@
-{{- include "charts.base.serviceAccount" . -}}
-{{- include "charts.base.namepace" . -}}
-{{- include "charts.base.deployment" . -}}
-{{- include "charts.base.service" . -}}
-{{- include "charts.base.persistentVolume" . -}}
-{{- include "charts.base.configMap" . -}}
-{{- include "charts.base.ingress" . -}}

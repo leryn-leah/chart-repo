@@ -1,6 +1,0 @@
-dependencies:
-- name: base-lib
-  repository: https://harbor.leryn.top/chartrepo/library
-  version: 0.0.1
-digest: sha256:f77a688ff14ce6b28ab52da756bd1a0e1ba86f403650500411ed5537db9cb6fb
-generated: "2022-09-16T13:28:49.9602257+08:00"
